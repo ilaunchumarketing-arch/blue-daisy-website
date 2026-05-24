@@ -7,6 +7,21 @@
 (function () {
   'use strict';
 
+  /* ---------- Promo / announcement bar (language-aware, all pages) ---------- */
+  (function () {
+    var lang = (document.documentElement.lang || 'en').slice(0, 2).toLowerCase();
+    var promos = {
+      en: { t: 'New Homeowner Special — <strong>50% off your first month.</strong> Cancel anytime, no contracts.', c: 'Get 50% Off', u: '/contact/' },
+      es: { t: 'Especial para Nuevos Propietarios — <strong>50% de descuento en tu primer mes.</strong> Cancela cuando quieras, sin contratos.', c: 'Obtener 50%', u: '/es/contact/' },
+      pt: { t: 'Oferta para Novos Proprietários — <strong>50% de desconto no primeiro mês.</strong> Cancele quando quiser, sem contrato.', c: 'Quero 50%', u: '/pt/contact/' }
+    };
+    var p = promos[lang] || promos.en;
+    var bar = document.createElement('div');
+    bar.className = 'promo-bar';
+    bar.innerHTML = '<span>' + p.t + '</span><a class="promo-cta" href="' + p.u + '">' + p.c + ' →</a>';
+    document.body.insertBefore(bar, document.body.firstChild);
+  })();
+
   /* ---------- Translations gate ----------
      Set to true once /es/ and /pt/ pages are live. While false, hide the
      language switcher and footer language links so they don't 404. */
