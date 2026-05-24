@@ -128,8 +128,32 @@
         <div class="form-card">
           <h2 style="font-size:1.5rem;margin-bottom:6px">Solicite Seu Orçamento</h2>
           <p style="color:var(--slate-light);font-size:.95rem;margin-bottom:22px">Leva cerca de 60 segundos.</p>
-          <iframe src="https://api.leadconnectorhq.com/widget/form/3rTCzg1zmBMJVDGYZFtg" style="width:100%;min-height:640px;border:none;border-radius:12px" id="inline-3rTCzg1zmBMJVDGYZFtg" data-layout="{'id':'INLINE'}" data-trigger-type="alwaysShow" data-form-name="Landscaping Request" data-form-id="3rTCzg1zmBMJVDGYZFtg" title="Landscaping Request"></iframe>
-          <script src="https://link.msgsndr.com/js/form_embed.js"></script>
+          <form id="lead-form" novalidate>
+            <div class="form-row">
+              <div class="field"><label for="lead-name">Nome*</label><input id="lead-name" type="text" required autocomplete="name"/></div>
+              <div class="field"><label for="lead-phone">Telefone*</label><input id="lead-phone" type="tel" required autocomplete="tel"/></div>
+            </div>
+            <div class="field"><label for="lead-email">E-mail</label><input id="lead-email" type="email" autocomplete="email"/></div>
+            <div class="form-row">
+              <div class="field"><label for="lead-city">Cidade</label><input id="lead-city" type="text" placeholder="Clermont, Haines City…"/></div>
+              <div class="field"><label for="lead-service">Eu preciso de</label>
+                <select id="lead-service">
+                  <option value="Monthly Lawn Maintenance">Manutenção mensal do gramado</option>
+                  <option value="Sod Installation">Substituição / instalação de grama</option>
+                  <option value="Irrigation">Instalação / conserto de irrigação</option>
+                  <option value="Landscape Design">Projeto de paisagismo</option>
+                  <option value="Tree &amp; Palm">Serviço de árvores e palmeiras</option>
+                  <option value="Weed &amp; Pest">Controle de ervas e pragas</option>
+                  <option value="Commercial / HOA">Comercial / HOA</option>
+                  <option value="Not sure">Não tenho certeza — me ajude</option>
+                </select>
+              </div>
+            </div>
+            <div class="field"><label for="lead-message">Conte sobre seu quintal</label><textarea id="lead-message" placeholder="Manchas marrons, arbustos altos, palmeira morta, grama nova…"></textarea></div>
+            <button type="submit" class="btn btn--primary btn--block btn--lg">Obter Meu Orçamento Grátis</button>
+            <p class="form-note">Ao enviar, você concorda em ser contatado sobre seu orçamento. Nunca vendemos suas informações.</p>
+          </form>
+          <div class="form-success" id="lead-success">✅ Obrigado! Recebemos sua solicitação. Entraremos em contato em um dia útil. Precisa antes? Ligue para <a href="tel:+17876712771">(787) 671-2771</a>.</div>
         </div>
       </div>
     </div>

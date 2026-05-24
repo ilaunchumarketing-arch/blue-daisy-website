@@ -91,6 +91,70 @@
     });
   });
 
+  /* ---------- Lead form -> GoHighLevel (contact + opportunity at New Lead) ---------- */
+  (function () {
+    var form = document.getElementById('lead-form');
+    if (!form) return;
+    var GHL = {
+      token: 'pit-e04db58a-3dc4-4f5a-81f9-d1b583e7b8e1',
+      loc: 'FjGUs5RjOkI5lKY2fxy1',
+      pipeline: 'pT2d8fHSBLIFkHezD7OJ',
+      stage: 'd119d2b6-5d78-4c03-aac3-07e7b195d57b'
+    };
+    var lang = (document.documentElement.lang || 'en').slice(0, 2).toLowerCase();
+    var T = ({
+      en: { sending: 'Sending…', err: 'Something went wrong — please call (787) 671-2771.' },
+      es: { sending: 'Enviando…', err: 'Algo salió mal — llámanos al (787) 671-2771.' },
+      pt: { sending: 'Enviando…', err: 'Algo deu errado — ligue para (787) 671-2771.' }
+    })[lang] || { sending: 'Sending…', err: 'Something went wrong — please call (787) 671-2771.' };
+    var val = function (id) { var el = document.getElementById(id); return el ? el.value.trim() : ''; };
+
+    form.addEventListener('submit', function (e) {
+      e.preventDefault();
+      var name = val('lead-name'), phone = val('lead-phone');
+      if (!name || !phone) { if (form.reportValidity) form.reportValidity(); return; }
+      var email = val('lead-email'), city = val('lead-city'),
+          service = val('lead-service'), message = val('lead-message');
+      var parts = name.split(/\s+/), first = parts.shift(), last = parts.join(' ') || '-';
+      var btn = form.querySelector('button[type="submit"]'), orig = btn.textContent;
+      btn.disabled = true; btn.textContent = T.sending;
+      var H = { 'Authorization': 'Bearer ' + GHL.token, 'Content-Type': 'application/json', 'Version': '2021-07-28' };
+      if (window.fbq) fbq('track', 'Lead');
+
+      var contactBody = {
+        firstName: first, lastName: last, phone: phone, locationId: GHL.loc,
+        source: 'Website ' + lang.toUpperCase() + ' — ' + location.hostname,
+        tags: ['Website Lead', 'Lang: ' + lang.toUpperCase()]
+      };
+      if (email) contactBody.email = email;
+      if (city) { contactBody.city = city; contactBody.tags.push('City: ' + city); }
+      if (service) contactBody.tags.push('Service: ' + service);
+
+      fetch('https://services.leadconnectorhq.com/contacts/', { method: 'POST', headers: H, body: JSON.stringify(contactBody) })
+        .then(function (r) { return r.json(); })
+        .then(function (d) {
+          var cid = d.contact && d.contact.id;
+          if (!cid) throw new Error('no contact id');
+          if (message) {
+            fetch('https://services.leadconnectorhq.com/contacts/' + cid + '/notes',
+              { method: 'POST', headers: H, body: JSON.stringify({ body: message }) }).catch(function () {});
+          }
+          return fetch('https://services.leadconnectorhq.com/opportunities/', {
+            method: 'POST', headers: H, body: JSON.stringify({
+              pipelineId: GHL.pipeline, locationId: GHL.loc, pipelineStageId: GHL.stage,
+              status: 'open', contactId: cid, name: '[Web] ' + name + (service ? ' — ' + service : '')
+            })
+          });
+        })
+        .then(function () {
+          form.style.display = 'none';
+          var ok = document.getElementById('lead-success');
+          if (ok) ok.style.display = 'block';
+        })
+        .catch(function () { btn.disabled = false; btn.textContent = orig; alert(T.err); });
+    });
+  })();
+
   /* ---------- Reveal on scroll ---------- */
   var reveals = document.querySelectorAll('.reveal');
   if ('IntersectionObserver' in window && reveals.length) {
