@@ -128,36 +128,8 @@
         <div class="form-card">
           <h2 style="font-size:1.5rem;margin-bottom:6px">Solicite Seu Orçamento</h2>
           <p style="color:var(--slate-light);font-size:.95rem;margin-bottom:22px">Leva cerca de 60 segundos.</p>
-          <!-- NOTE: wire this form to GoHighLevel (location FjGUs5RjOkI5lKY2fxy1) or a form endpoint.
-               Set data-endpoint below. Until then submissions show a success message + fire the Meta Lead event. -->
-          <form id="estimate-form" data-endpoint="" novalidate>
-            <div class="form-row">
-              <div class="field"><label for="name">Nome*</label><input type="text" id="name" name="name" required autocomplete="name"/></div>
-              <div class="field"><label for="phone">Telefone*</label><input type="tel" id="phone" name="phone" required autocomplete="tel"/></div>
-            </div>
-            <div class="field"><label for="email">E-mail</label><input type="email" id="email" name="email" autocomplete="email"/></div>
-            <div class="form-row">
-              <div class="field"><label for="city">Cidade</label><input type="text" id="city" name="city" placeholder="Clermont, Haines City…"/></div>
-              <div class="field"><label for="service">Preciso de</label>
-                <select id="service" name="service">
-                  <option value="Monthly Lawn Maintenance">Manutenção mensal do gramado</option>
-                  <option value="Sod Installation">Substituição / instalação de grama</option>
-                  <option value="Irrigation">Instalação / conserto de irrigação</option>
-                  <option value="Landscape Design">Projeto de paisagismo</option>
-                  <option value="Tree & Palm">Serviço de árvores e palmeiras</option>
-                  <option value="Weed & Pest">Controle de ervas e pragas</option>
-                  <option value="Commercial / HOA">Comercial / HOA</option>
-                  <option value="Not sure">Não sei — preciso de ajuda</option>
-                </select>
-              </div>
-            </div>
-            <div class="field"><label for="message">Conte-nos sobre o seu jardim</label><textarea id="message" name="message" placeholder="Manchas secas, canteiros descuidados, palmeira morta, grama nova…"></textarea></div>
-            <button type="submit" class="btn btn--primary btn--block btn--lg">Quero Meu Orçamento Grátis</button>
-            <p class="form-note">Ao enviar, você concorda em ser contatado sobre o seu orçamento. Nunca vendemos suas informações.</p>
-          </form>
-          <div class="form-success" id="form-success">
-            ✅ Obrigado! Recebemos seu pedido. Entraremos em contato em até um dia útil. Precisa mais rápido? Ligue para <a href="tel:+17876712771">(787) 671-2771</a>.
-          </div>
+          <iframe src="https://api.leadconnectorhq.com/widget/form/3rTCzg1zmBMJVDGYZFtg" style="width:100%;min-height:640px;border:none;border-radius:12px" id="inline-3rTCzg1zmBMJVDGYZFtg" data-layout="{'id':'INLINE'}" data-trigger-type="alwaysShow" data-form-name="Landscaping Request" data-form-id="3rTCzg1zmBMJVDGYZFtg" title="Landscaping Request"></iframe>
+          <script src="https://link.msgsndr.com/js/form_embed.js"></script>
         </div>
       </div>
     </div>
