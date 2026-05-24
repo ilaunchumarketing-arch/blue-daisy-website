@@ -417,6 +417,9 @@ ul.checks li strong{color:var(--ink)}
 .prose ul:not(.checks) li{position:relative;padding-left:26px;margin-bottom:10px}
 .prose ul:not(.checks) li::before{content:"";position:absolute;left:4px;top:11px;width:7px;height:7px;border-radius:50%;background:var(--green-mid)}
 .prose img{border-radius:var(--radius);box-shadow:var(--shadow-sm);margin:24px 0}
+.prose figure{margin:28px 0}
+.prose figure img{margin:0;width:100%}
+.prose figcaption{margin-top:9px;font-size:.85rem;color:var(--slate-light);text-align:center;font-style:italic}
 .prose .callout{margin:26px 0}
 .prose table{width:100%;border-collapse:collapse;margin:22px 0;font-size:.95rem}
 .prose th,.prose td{border:1px solid var(--line);padding:11px 14px;text-align:left}
