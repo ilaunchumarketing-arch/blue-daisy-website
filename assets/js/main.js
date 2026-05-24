@@ -25,7 +25,7 @@
   /* ---------- Translations gate ----------
      Set to true once /es/ and /pt/ pages are live. While false, hide the
      language switcher and footer language links so they don't 404. */
-  var TRANSLATIONS_LIVE = false;
+  var TRANSLATIONS_LIVE = true;
   if (!TRANSLATIONS_LIVE) {
     var langEl = document.querySelector('.lang');
     if (langEl) langEl.style.display = 'none';
