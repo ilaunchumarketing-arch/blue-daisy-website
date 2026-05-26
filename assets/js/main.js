@@ -95,10 +95,8 @@
   (function () {
     var form = document.getElementById('lead-form');
     if (!form) return;
-    // Lead delivery → GoHighLevel Inbound Webhook (no API token in the page).
-    // Paste the GHL Workflow "Inbound Webhook" trigger URL between the quotes below.
-    // The workflow maps these fields → contact + opportunity in the pipeline.
-    var LEAD_WEBHOOK = '';
+    // Lead delivery → /api/lead serverless proxy (GHL token stays server-side, never in the page).
+    var LEAD_ENDPOINT = 'https://blue-daisy-landing-pages-deploy.vercel.app/api/lead';
     var lang = (document.documentElement.lang || 'en').slice(0, 2).toLowerCase();
     var T = ({
       en: { sending: 'Sending…' },
@@ -131,13 +129,9 @@
         var ok = document.getElementById('lead-success');
         if (ok) ok.style.display = 'block';
       };
-      if (LEAD_WEBHOOK) {
-        fetch(LEAD_WEBHOOK, { method: 'POST', mode: 'no-cors', headers: { 'Content-Type': 'text/plain;charset=UTF-8' }, body: JSON.stringify(lead) })
-          .then(showOk).catch(showOk);
-        setTimeout(showOk, 1500);
-      } else {
-        showOk();
-      }
+      fetch(LEAD_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(lead) })
+        .then(showOk).catch(showOk);
+      setTimeout(showOk, 4000);
     });
   })();
 
