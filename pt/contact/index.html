@@ -31,6 +31,53 @@
   fbq('init','1447336667130840');fbq('track','PageView');
   </script>
   <noscript><img height="1" width="1" style="display:none" src="https://www.facebook.com/tr?id=1447336667130840&ev=PageView&noscript=1"/></noscript>
+<!-- Blue Daisy lead attribution capture — persists UTMs + click IDs for 30d so leads carry their source -->
+<script>
+(function () {
+  var KEY = 'bd_attribution_v1';
+  var TTL_MS = 30 * 24 * 60 * 60 * 1000;
+  var qs = new URLSearchParams(location.search);
+  var has = function (k) { return qs.has(k) && qs.get(k) !== ''; };
+  if (has('utm_source') || has('utm_campaign') || has('utm_medium') ||
+      has('utm_content') || has('utm_term') || has('fbclid') || has('gclid')) {
+    var captured = {
+      utmSource: qs.get('utm_source') || '',
+      utmMedium: qs.get('utm_medium') || '',
+      utmCampaign: qs.get('utm_campaign') || '',
+      utmContent: qs.get('utm_content') || '',
+      utmTerm: qs.get('utm_term') || '',
+      fbclid: qs.get('fbclid') || '',
+      gclid: qs.get('gclid') || '',
+      referrer: document.referrer || '',
+      landingUrl: location.href,
+      capturedAt: new Date().toISOString(),
+      _expiresAt: Date.now() + TTL_MS
+    };
+    try { localStorage.setItem(KEY, JSON.stringify(captured)); } catch (e) {}
+    window.bdAttribution = captured;
+  } else {
+    try {
+      var raw = localStorage.getItem(KEY);
+      if (raw) {
+        var stored = JSON.parse(raw);
+        if (stored && stored._expiresAt && stored._expiresAt > Date.now()) {
+          window.bdAttribution = stored;
+        } else {
+          localStorage.removeItem(KEY);
+        }
+      }
+    } catch (e) {}
+    if (!window.bdAttribution) {
+      window.bdAttribution = {
+        referrer: document.referrer || '',
+        landingUrl: location.href,
+        capturedAt: new Date().toISOString()
+      };
+    }
+  }
+})();
+</script>
+<!-- End attribution capture -->
 </head>
 <body>
 <a class="skip" href="#main">Pular para o conteúdo</a>
@@ -202,18 +249,74 @@
 document.getElementById('yr').textContent=new Date().getFullYear();
 // Fire Meta "Contact" on click-to-call
 var cl=document.getElementById('call-link');if(cl){cl.addEventListener('click',function(){if(window.fbq)fbq('track','Contact');});}
-// Estimate form: fire Lead, POST to endpoint if configured, else show success
-(function(){
-  var f=document.getElementById('estimate-form');if(!f)return;
-  f.addEventListener('submit',function(e){
+// Estimate form: capture attribution + fire Lead + CAPI-deduped POST to universal /api/lead
+(function () {
+  var f = document.getElementById('lead-form');
+  if (!f) return;
+  var LEAD_ENDPOINT = 'https://antilles-landing-next-i-launch-u.vercel.app/api/lead';
+  function bdCookie(name) {
+    var m = document.cookie.match('(?:^|; )' + name.replace(/[.$?*|{}()[\]\\\/+^]/g, '\\$&') + '=([^;]*)');
+    return m ? decodeURIComponent(m[1]) : '';
+  }
+  function bdFbcFromUrl() {
+    var existing = bdCookie('_fbc');
+    if (existing) return existing;
+    var m = location.search.match(/[?&]fbclid=([^&]+)/);
+    if (!m) return '';
+    return 'fb.1.' + Date.now() + '.' + decodeURIComponent(m[1]);
+  }
+  function bdEventId() {
+    if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
+    return 'bd-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
+  }
+  f.addEventListener('submit', function (e) {
     e.preventDefault();
-    if(!f.name.value.trim()||!f.phone.value.trim()){f.reportValidity&&f.reportValidity();return;}
-    if(window.fbq)fbq('track','Lead');
-    var ep=f.getAttribute('data-endpoint');
-    var done=function(){f.style.display='none';document.getElementById('form-success').style.display='block';};
-    if(ep){
-      fetch(ep,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(Object.fromEntries(new FormData(f)))}).then(done).catch(done);
-    }else{done();}
+    var nm  = (document.getElementById('lead-name')   || {}).value || '';
+    var ph  = (document.getElementById('lead-phone')  || {}).value || '';
+    var em  = (document.getElementById('lead-email')  || {}).value || '';
+    var cy  = (document.getElementById('lead-city')   || {}).value || '';
+    var sv  = (document.getElementById('lead-service')|| {}).value || '';
+    var msg = (document.getElementById('lead-message')|| {}).value || '';
+    nm = nm.trim(); em = em.trim(); cy = cy.trim(); msg = msg.trim();
+    var phDigits = ph.replace(/\D/g, '');
+    if (!nm || phDigits.length < 7) {
+      alert('Por favor preencha seu nome e telefone.');
+      return;
+    }
+    var eventId = bdEventId();
+    var fbp = bdCookie('_fbp');
+    var fbc = bdFbcFromUrl();
+    if (window.fbq) fbq('track', 'Lead', {}, { eventID: eventId });
+    var phoneE164 = phDigits.length === 10 ? ('+1' + phDigits)
+                  : phDigits.length === 11 ? ('+'  + phDigits)
+                  : ph;
+    var lead = {
+      client: 'blue_daisy',
+      name: nm,
+      email: em || (phDigits + '@noemail.bluedaisy'),  // GHL requires an email
+      phone: phoneE164,
+      lang: 'pt',
+      segmentSlug: 'web-contact-pt',
+      segmentName: 'Site Principal — Contato (PT)',
+      pageUrl: location.href,
+      message: msg,
+      extra: { service: sv, city: cy },
+      eventId: eventId,
+      fbp: fbp,
+      fbc: fbc,
+      attribution: window.bdAttribution || {}
+    };
+    var done = function () {
+      f.style.display = 'none';
+      var ok = document.getElementById('lead-success');
+      if (ok) ok.style.display = 'block';
+    };
+    fetch(LEAD_ENDPOINT, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(lead)
+    }).then(done).catch(done);
+    setTimeout(done, 4000);
   });
 })();
 </script>
