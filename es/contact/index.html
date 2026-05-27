@@ -76,6 +76,14 @@
 })();
 </script>
 <!-- End attribution capture -->
+
+<style>/* bd-inline-error-v1 */
+.bd-err-banner { display:none; margin:8px 0 12px; padding:12px 14px; background:#fde8e8; color:#7a1414; border:1px solid #f3b4b4; border-radius:8px; font-size:.95rem; line-height:1.4; }
+.bd-err-banner.is-visible { display:block; }
+.bd-err-banner b { display:block; margin-bottom:4px; }
+.bd-err-banner ul { margin:0; padding-left:18px; }
+.field-error input, .field-error select, .field-error textarea { border-color:#d12c2c !important; outline:none; box-shadow:0 0 0 3px rgba(209,44,44,.12) !important; }
+</style>
 </head>
 <body>
 <a class="skip" href="#main">Ir al contenido</a>
@@ -175,8 +183,8 @@
           <p style="color:var(--slate-light);font-size:.95rem;margin-bottom:22px">Toma unos 60 segundos.</p>
           <form id="lead-form" novalidate>
             <div class="form-row">
-              <div class="field"><label for="lead-name">Nombre*</label><input id="lead-name" type="text" required autocomplete="name"/></div>
-              <div class="field"><label for="lead-phone">Teléfono*</label><input id="lead-phone" type="tel" required autocomplete="tel"/></div>
+              <div class="field"><label for="lead-name">Nombre*</label><input id="lead-name" type="text" autocomplete="name"/></div>
+              <div class="field"><label for="lead-phone">Teléfono*</label><input id="lead-phone" type="tel" autocomplete="tel"/></div>
             </div>
             <div class="field"><label for="lead-email">Correo electrónico</label><input id="lead-email" type="email" autocomplete="email"/></div>
             <div class="form-row">
@@ -195,6 +203,7 @@
               </div>
             </div>
             <div class="field"><label for="lead-message">Cuéntanos sobre tu jardín</label><textarea id="lead-message" placeholder="Manchas marrones, arbustos crecidos, palmera muerta, césped nuevo…"></textarea></div>
+            <div id="bdErrBanner" class="bd-err-banner" role="alert" aria-live="polite"></div>
             <button type="submit" class="btn btn--primary btn--block btn--lg">Obtener Mi Estimado Gratis</button>
             <p class="form-note">Al enviar, aceptas que te contactemos sobre tu estimado. Nunca vendemos tu información.</p>
           </form>
@@ -247,10 +256,9 @@
 document.getElementById('yr').textContent=new Date().getFullYear();
 // Fire Meta "Contact" on click-to-call
 var cl=document.getElementById('call-link');if(cl){cl.addEventListener('click',function(){if(window.fbq)fbq('track','Contact');});}
-// Estimate form: capture attribution + fire Lead + CAPI-deduped POST to universal /api/lead
+// Submit handler — visible inline errors (bd-inline-error-v1)
 (function () {
-  var f = document.getElementById('lead-form');
-  if (!f) return;
+  var f = document.getElementById('lead-form'); if (!f) return;
   var LEAD_ENDPOINT = 'https://antilles-landing-next-i-launch-u.vercel.app/api/lead';
   function bdCookie(name) {
     var m = document.cookie.match('(?:^|; )' + name.replace(/[.$?*|{}()[\]\\\/+^]/g, '\\$&') + '=([^;]*)');
@@ -267,20 +275,38 @@ var cl=document.getElementById('call-link');if(cl){cl.addEventListener('click',f
     if (window.crypto && crypto.randomUUID) return crypto.randomUUID();
     return 'bd-' + Date.now() + '-' + Math.random().toString(36).slice(2, 10);
   }
+  function bdMarkErr(id, on) {
+    var el = document.getElementById(id); if (!el) return;
+    var row = el.closest('.row, .field, .form-row') || el.parentElement;
+    if (row) row.classList[on ? 'add' : 'remove']('field-error');
+  }
+  function bdShowErrors(missing) {
+    var banner = document.getElementById('bdErrBanner'); if (!banner) return;
+    if (!missing.length) { banner.classList.remove('is-visible'); banner.innerHTML=''; return; }
+    banner.innerHTML = '<b>Por favor corrige lo siguiente:</b><ul>' + missing.map(function(m){ return '<li>' + m + '</li>'; }).join('') + '</ul>';
+    banner.classList.add('is-visible');
+  }
   f.addEventListener('submit', function (e) {
     e.preventDefault();
-    var nm  = (document.getElementById('lead-name')   || {}).value || '';
-    var ph  = (document.getElementById('lead-phone')  || {}).value || '';
-    var em  = (document.getElementById('lead-email')  || {}).value || '';
-    var cy  = (document.getElementById('lead-city')   || {}).value || '';
-    var sv  = (document.getElementById('lead-service')|| {}).value || '';
-    var msg = (document.getElementById('lead-message')|| {}).value || '';
+    var nm  = (document.getElementById('lead-name')   ||{}).value || '';
+    var ph  = (document.getElementById('lead-phone')  ||{}).value || '';
+    var em  = (document.getElementById('lead-email')  ||{}).value || '';
+    var cy  = (document.getElementById('lead-city')   ||{}).value || '';
+    var sv  = (document.getElementById('lead-service')||{}).value || '';
+    var msg = (document.getElementById('lead-message')||{}).value || '';
     nm = nm.trim(); em = em.trim(); cy = cy.trim(); msg = msg.trim();
     var phDigits = ph.replace(/\D/g, '');
-    if (!nm || phDigits.length < 7) {
-      alert('Por favor ingresa tu nombre y teléfono.');
+    var missing = [];
+    ['lead-name','lead-phone'].forEach(function(id){ bdMarkErr(id, false); });
+    if (!nm) { missing.push('Nombre'); bdMarkErr('lead-name', true); }
+    if (phDigits.length < 7) { missing.push('Teléfono (7+ dígitos)'); bdMarkErr('lead-phone', true); }
+    if (missing.length) {
+      bdShowErrors(missing);
+      var firstBad = document.querySelector('.field-error input, .field-error select, .field-error textarea');
+      if (firstBad) { firstBad.focus(); firstBad.scrollIntoView({behavior:'smooth', block:'center'}); }
       return;
     }
+    bdShowErrors([]);
     var eventId = bdEventId();
     var fbp = bdCookie('_fbp');
     var fbc = bdFbcFromUrl();
@@ -291,7 +317,7 @@ var cl=document.getElementById('call-link');if(cl){cl.addEventListener('click',f
     var lead = {
       client: 'blue_daisy',
       name: nm,
-      email: em || (phDigits + '@noemail.bluedaisy'),  // GHL requires an email
+      email: em || (phDigits + '@noemail.bluedaisy'),
       phone: phoneE164,
       lang: 'es',
       segmentSlug: 'web-contact-es',
@@ -304,16 +330,15 @@ var cl=document.getElementById('call-link');if(cl){cl.addEventListener('click',f
       fbc: fbc,
       attribution: window.bdAttribution || {}
     };
+    var btn = f.querySelector('button[type="submit"]');
+    if (btn) { btn.disabled = true; btn.dataset.bdLabel = btn.textContent; btn.textContent = 'Enviando…'; }
     var done = function () {
       f.style.display = 'none';
       var ok = document.getElementById('lead-success');
       if (ok) ok.style.display = 'block';
     };
-    fetch(LEAD_ENDPOINT, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(lead)
-    }).then(done).catch(done);
+    fetch(LEAD_ENDPOINT, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(lead) })
+      .then(done).catch(done);
     setTimeout(done, 4000);
   });
 })();
