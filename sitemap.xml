@@ -513,4 +513,58 @@
     <lastmod>2026-05-24</lastmod>
     <priority>0.8</priority>
   </url>
+  <url>
+    <loc>https://bluedaisylawncare.com/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bluedaisylawncare.com/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://bluedaisylawncare.com/es/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://bluedaisylawncare.com/pt/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bluedaisylawncare.com/privacy/"/>
+    <lastmod>2026-06-02</lastmod>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://bluedaisylawncare.com/es/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bluedaisylawncare.com/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://bluedaisylawncare.com/es/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://bluedaisylawncare.com/pt/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bluedaisylawncare.com/privacy/"/>
+    <lastmod>2026-06-02</lastmod>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://bluedaisylawncare.com/pt/privacy/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bluedaisylawncare.com/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://bluedaisylawncare.com/es/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://bluedaisylawncare.com/pt/privacy/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bluedaisylawncare.com/privacy/"/>
+    <lastmod>2026-06-02</lastmod>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://bluedaisylawncare.com/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bluedaisylawncare.com/terms/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://bluedaisylawncare.com/es/terms/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://bluedaisylawncare.com/pt/terms/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bluedaisylawncare.com/terms/"/>
+    <lastmod>2026-06-02</lastmod>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://bluedaisylawncare.com/es/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bluedaisylawncare.com/terms/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://bluedaisylawncare.com/es/terms/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://bluedaisylawncare.com/pt/terms/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bluedaisylawncare.com/terms/"/>
+    <lastmod>2026-06-02</lastmod>
+    <priority>0.3</priority>
+  </url>
+  <url>
+    <loc>https://bluedaisylawncare.com/pt/terms/</loc>
+    <xhtml:link rel="alternate" hreflang="en" href="https://bluedaisylawncare.com/terms/"/>
+    <xhtml:link rel="alternate" hreflang="es" href="https://bluedaisylawncare.com/es/terms/"/>
+    <xhtml:link rel="alternate" hreflang="pt" href="https://bluedaisylawncare.com/pt/terms/"/>
+    <xhtml:link rel="alternate" hreflang="x-default" href="https://bluedaisylawncare.com/terms/"/>
+    <lastmod>2026-06-02</lastmod>
+    <priority>0.3</priority>
+  </url>
 </urlset>
